@@ -64,11 +64,15 @@ main h1{
     width: 300px;
 }
 
-#grid .box{
+.box{
     width: 30px;
     height: 30px;
-    background-color: red;
-    border: 1px solid grey;
+    background-color: rgb(209, 140, 255);
+    border: 1px solid rgb(221, 221, 221);
     float: left;
+}
+
+.active{
+    background-color: rgb(110, 110, 255);
 }
 /* /MAIN */

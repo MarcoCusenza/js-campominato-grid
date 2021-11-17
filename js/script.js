@@ -25,8 +25,8 @@ hard.addEventListener('click', function () { changeDifficulty(2) });
 function fillGrid(nItems) {
     for (let i = 0; i < nItems; i++) {
         for (let j = 0; j < nItems; j++) {
-            let box = document.createElement("div");
-            box.className = "box";
+            const box = document.createElement('div');
+            box.className = 'box';
             //Classe speciale per elementi della prima e ultima riga
             if (i == 0) {
                 box.classList.add("noTop");
@@ -43,9 +43,12 @@ function fillGrid(nItems) {
                 box.classList.add("noRight");
             }
             grid.appendChild(box);
+            box.addEventListener('click', function () {
+                console.log(this);
+                this.classList.add("active");
+            });
         }
     }
-    console.log(grid);
 }
 
 //Cambio difficoltà e nuova griglia con nuovo riempimento
@@ -54,19 +57,19 @@ function changeDifficulty(lvl) {
         numBox = 49;
         boxPerRow = 7;
         grid.className = "easyGrid";
-        grid.innerHTML = "";
-        fillGrid(boxPerRow);
+        grid.innerHTML = ""; //svuota la griglia
+        fillGrid(boxPerRow); //riempi la griglia
     } else if (lvl == 1) {
         numBox = 81;
         boxPerRow = 9;
         grid.className = "mediumGrid";
-        grid.innerHTML = "";
-        fillGrid(boxPerRow);
+        grid.innerHTML = ""; //svuota la griglia
+        fillGrid(boxPerRow); //riempi la griglia
     } else {
         numBox = 100;
         boxPerRow = 10;
         grid.className = "hardGrid";
-        grid.innerHTML = "";
-        fillGrid(boxPerRow);
+        grid.innerHTML = ""; //svuota la griglia
+        fillGrid(boxPerRow); //riempi la griglia
     }
 }
