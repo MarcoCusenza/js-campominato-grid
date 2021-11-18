@@ -1,3 +1,4 @@
+//*****PROGRAMMA*****
 const grid = document.getElementById("grid");
 let difficulty = 0; // 0=EASY 1=MEDIUM 2=HARD
 let numBox = 49;
@@ -11,8 +12,7 @@ const crazy = document.querySelector(".crazyBtn");
 
 //Inizializzazione griglia modalità easy
 grid.className = "easyGrid";
-fillGrid(7);
-bombsGenerator(numBox, numBombs);
+setup(grid, boxPerRow, numBox, numBombs);
 
 
 //Cambio difficoltà --> nuova partita
@@ -21,9 +21,22 @@ medium.addEventListener('click', function () { changeDifficulty(1) });
 hard.addEventListener('click', function () { changeDifficulty(2) });
 crazy.addEventListener('click', function () { changeDifficulty(3) });
 
+//*****FINE PROGRAMMA*****
 
 
-//FUNZIONI
+
+
+
+//_____FUNZIONI_____
+
+//Setup gioco
+function setup(grid, boxPerRow, numBox, numBombs) {
+    grid.innerHTML = ""; //svuota la griglia
+    fillGrid(); //riempi la griglia
+    bombsGenerator(numBombs); //genera e inserisci le bombe
+    fillBox(); //riempi i box
+}
+
 
 //Cambio difficoltà e nuova griglia con nuovo riempimento
 function changeDifficulty(lvl) {
@@ -32,59 +45,38 @@ function changeDifficulty(lvl) {
         boxPerRow = 7;
         numBombs = 10;
         grid.className = "easyGrid";
-        grid.innerHTML = ""; //svuota la griglia
-        fillGrid(boxPerRow); //riempi la griglia
-        bombsGenerator(numBox, numBombs);
+        setup(grid, boxPerRow, numBox, numBombs);
+
     } else if (lvl == 1) {//***livello medio
         numBox = 121;
         boxPerRow = 11;
         numBombs = 25;
         grid.className = "mediumGrid";
-        grid.innerHTML = ""; //svuota la griglia
-        fillGrid(boxPerRow); //riempi la griglia
-        bombsGenerator(numBox, numBombs);
+        setup(grid, boxPerRow, numBox, numBombs);
     } else if (lvl == 2) {//***livello difficile
         numBox = 225;
         boxPerRow = 15;
         numBombs = 50;
         grid.className = "hardGrid";
-        grid.innerHTML = ""; //svuota la griglia
-        fillGrid(boxPerRow); //riempi la griglia
-        bombsGenerator(numBox, numBombs);
+        setup(grid, boxPerRow, numBox, numBombs);
     } else {//***livello crazy
         numBox = 625;
         boxPerRow = 25;
         numBombs = 100;
         grid.className = "crazyGrid";
-        grid.innerHTML = ""; //svuota la griglia
-        fillGrid(boxPerRow); //riempi la griglia
-        bombsGenerator(numBox, numBombs);
+        setup(grid, boxPerRow, numBox, numBombs);
     }
 }
 
-//Riempimento griglia
-function fillGrid(nItems) {
-    for (let i = 0; i < nItems; i++) {
-        for (let j = 0; j < nItems; j++) {
-            const box = document.createElement('div');
-            box.className = `box box-${positionCalc(i, j, boxPerRow)} raw-${i} col-${j}`;
-            //Classe speciale per elementi della prima e ultima riga
-            if (i == 0) {
-                box.classList.add(`noTop`);
-            }
-            if (i == nItems - 1) {
-                box.classList.add("noBot");
-            }
 
-            //Classe speciale per elementi della prima e ultima colonna
-            if (j == 0) {
-                box.classList.add("noLeft");
-            }
-            if (j == nItems - 1) {
-                box.classList.add("noRight");
-            }
+//Riempimento griglia
+function fillGrid() {
+    for (let i = 0; i < boxPerRow; i++) {
+        for (let j = 0; j < boxPerRow; j++) {
+            const box = document.createElement('div');
+            box.className = `box box-${positionCalc(i, j)} row-${i} col-${j}`;
             grid.appendChild(box);
-            box.addEventListener('click', function () {
+            box.addEventListener('click', function () {//box cliccabili
                 console.log(this);
                 this.classList.add("active");
             });
@@ -93,28 +85,77 @@ function fillGrid(nItems) {
 }
 
 //generazione e inserimento bombe
-function bombsGenerator(box, bombs) {
+function bombsGenerator(numBombs) {
+    const arrayBox = document.getElementsByClassName('box');
     const array = [];
-    for (let i = 0; i < bombs; i++) {
-        let token = Math.floor(Math.random() * (box - 1));
-        if (array.includes(token)) {
+    for (let i = 0; i < numBombs; i++) {
+        let token = Math.floor(Math.random() * (arrayBox.length - 1));
+        if (array.includes(token)) {//controllo se l'array contiene già il numero
             i--;
         } else {
             array[i] = token;
         }
     }
-    arrayBox = document.getElementsByClassName('box');
-    for (let j = 0; j < bombs; j++) {
-        arrayBox[array[j]].classList.add("bomb");
+
+    for (let j = 0; j < numBombs; j++) {
+        arrayBox[array[j]].classList.add("bomb");//prendo i box che hanno indice array[j]
     }
 }
 
 
-//calcolo della posizione di box in un sistema a matrice
-function positionCalc(raw, col, tot) {
-    return ((raw * tot) + col)
+//calcolo della posizione dei box in un sistema a matrice
+function positionCalc(row, col) {
+    return ((row * boxPerRow) + col)
 }
 
-function numBombsAround() {
 
+//Riempimento di ogni box con il numero di bombe circostanti
+function fillBox() {
+    console.log("DAJEEEE");
+    const arrayBox = document.getElementsByClassName('box');
+    for (let i = 0; i < arrayBox.length; i++) {
+        let row = parseInt(i / boxPerRow);
+        let col = i % boxPerRow;
+        console.log("row =", row, "col =", col);
+        let count = 0;
+        for (let x = 0; x < 3; x++) {
+            for (let y = 0; y < 3; y++) {
+                let a = (row - 1) + x;
+                let b = (col - 1) + y;
+                console.log("a =", a, "b =", b);
+                if (a >= 0 && a < boxPerRow && b >= 0 && b < boxPerRow) {
+                    console.log(arrayBox[positionCalc(a, b)].classList.contains("bomb"));
+                    if (arrayBox[positionCalc(a, b)].classList.contains("bomb")) {
+                        count++;
+                        console.log(count);
+                    }
+                }
+            }
+        }
+        arrayBox[i].innerHTML = count;
+    }
 }
+
+//calcolo di quante bombe ci sono intorno al box[row, col]
+// function numBombsAround(row, col, boxPerRow, arrayBox) {
+//     let count = 0;
+//     for (let x = 0; x < 3; x++) {
+//         for (let y = 0; y < 3; y++) {
+//             let a = (row - 1) + x;
+//             let b = (col - 1) + y;
+//             console.log("a =", a, "b =", b);
+//             if (a >= 0 && a < boxPerRow && b >= 0 && b < boxPerRow) {
+//                 console.log("WE");
+//                 console.log(arrayBox[i].className);
+//                 console.log(arrayBox[i].classList.contains("bomb"));
+//                 if (arrayBox[positionCalc(a, b,)].classList.contains("bomb")) {
+//                     count++;
+//                     console.log(count);
+//                 }
+//             }
+//         }
+//     }
+//     return count;
+// }
+
+//_____FINE FUNZIONI_____
