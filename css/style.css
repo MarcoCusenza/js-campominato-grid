@@ -55,13 +55,18 @@ main h1{
 }
 
 #grid.mediumGrid{
-    height: 270px;
-    width: 270px;
+    height: 330px;
+    width: 330px;
 }
 
 #grid.hardGrid{
-    height: 300px;
-    width: 300px;
+    height: 450px;
+    width: 450px;
+}
+
+#grid.crazyGrid{
+    height: 750px;
+    width: 750px;
 }
 
 .box{
@@ -70,6 +75,10 @@ main h1{
     background-color: rgb(209, 140, 255);
     border: 1px solid rgb(221, 221, 221);
     float: left;
+}
+
+.bomb{
+    background-color: yellow;
 }
 
 .active{
