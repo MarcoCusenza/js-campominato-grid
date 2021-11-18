@@ -13,6 +13,10 @@
     clear: both;
     content: "";
 }
+
+.hidden{
+    display: none;
+}
 /* /COMMONS */
 
 /* HEADER */

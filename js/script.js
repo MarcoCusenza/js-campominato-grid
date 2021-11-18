@@ -1,9 +1,10 @@
 //*****PROGRAMMA*****
 const grid = document.getElementById("grid");
-let difficulty = 0; // 0=EASY 1=MEDIUM 2=HARD
-let numBox = 49;
-let boxPerRow = 7;
-let numBombs = 10;
+let difficulty = 0; // 0=EASY 1=MEDIUM 2=HARD 3=CRAZY
+let numBox = 49; //numero totale di box
+let boxPerRow = 7; //numero di box per riga
+let numBombs = 10; //numero totale di bombe
+let buone = numBox - numBombs; //numero di caselle da scoprire
 
 const easy = document.querySelector(".easyBtn");
 const medium = document.querySelector(".mediumBtn");
@@ -11,11 +12,10 @@ const hard = document.querySelector(".hardBtn");
 const crazy = document.querySelector(".crazyBtn");
 
 //Inizializzazione griglia modalità easy
-grid.className = "easyGrid";
-setup(grid, boxPerRow, numBox, numBombs);
+changeDifficulty(0);
 
 
-//Cambio difficoltà --> nuova partita
+//Check cambio difficoltà --> nuova partita
 easy.addEventListener('click', function () { changeDifficulty(0) });
 medium.addEventListener('click', function () { changeDifficulty(1) });
 hard.addEventListener('click', function () { changeDifficulty(2) });
@@ -30,7 +30,7 @@ crazy.addEventListener('click', function () { changeDifficulty(3) });
 //_____FUNZIONI_____
 
 //Setup gioco
-function setup(grid, boxPerRow, numBox, numBombs) {
+function setup(grid, numBombs) {
     grid.innerHTML = ""; //svuota la griglia
     fillGrid(); //riempi la griglia
     bombsGenerator(numBombs); //genera e inserisci le bombe
@@ -45,26 +45,26 @@ function changeDifficulty(lvl) {
         boxPerRow = 7;
         numBombs = 10;
         grid.className = "easyGrid";
-        setup(grid, boxPerRow, numBox, numBombs);
+        setup(grid, numBombs);
 
     } else if (lvl == 1) {//***livello medio
         numBox = 121;
         boxPerRow = 11;
         numBombs = 25;
         grid.className = "mediumGrid";
-        setup(grid, boxPerRow, numBox, numBombs);
+        setup(grid, numBombs);
     } else if (lvl == 2) {//***livello difficile
         numBox = 225;
         boxPerRow = 15;
         numBombs = 50;
         grid.className = "hardGrid";
-        setup(grid, boxPerRow, numBox, numBombs);
+        setup(grid, numBombs);
     } else {//***livello crazy
         numBox = 625;
         boxPerRow = 25;
         numBombs = 100;
         grid.className = "crazyGrid";
-        setup(grid, boxPerRow, numBox, numBombs);
+        setup(grid, numBombs);
     }
 }
 
@@ -79,6 +79,14 @@ function fillGrid() {
             box.addEventListener('click', function () {//box cliccabili
                 console.log(this);
                 this.classList.add("active");
+                if (this.classList.contains("bomb")) {
+                    endGame();
+                    console.log("FINE");
+                } else if (buone != 0) {
+                    buone--;
+                } else {
+                    endGame();
+                }
             });
         }
     }
@@ -158,6 +166,16 @@ function fillBox() {
 //     return count;
 // }
 
-//Tutto ok git?
+
+//concludere la partita
+function endGame() {
+    result = document.getElementById("result");
+    if (buone == 0) {
+        result.innerHTML = "Hai vinto! :D"
+    } else {
+        result.innerHTML = "Hai perso :("
+    }
+    result.classList.remove("hidden");
+}
 
 //_____FINE FUNZIONI_____
