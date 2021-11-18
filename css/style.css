@@ -6,6 +6,8 @@
     background-color:rgb(50, 50, 50);
     color: whitesmoke;
     font-family: 'Lato', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .clearfix{
@@ -89,7 +91,16 @@ main h1{
     background-color: rgb(174, 253, 233);
 }
 
+.bomb i{
+    color: rgb(50, 50, 50);
+    background: none;
+}
+
 .active{
     background-color: rgb(110, 110, 255);
+}
+
+#result{
+    font-size: 40px;
 }
 /* /MAIN */

@@ -29,21 +29,36 @@ crazy.addEventListener('click', function () { changeDifficulty(3) });
 
 //_____FUNZIONI_____
 
+// +++ GENERALI +++
+//calcolo della posizione dei box in un sistema a matrice
+function positionCalc(row, col) {
+    return ((row * boxPerRow) + col)
+}
+
+//funzione destroy
+function destroy(element) {
+    element.innerHTML = '';
+}
+// --- GENERALI ---
+
+
+
+// +++ SPECIFICHE +++
 //Setup gioco
 function setup(grid, numBombs) {
-    grid.innerHTML = ""; //svuota la griglia
+    destroy(grid); //svuota la griglia
     fillGrid(); //riempi la griglia
     bombsGenerator(numBombs); //genera e inserisci le bombe
     fillBox(); //riempi i box
 }
 
-
-//Cambio difficoltà e nuova griglia con nuovo riempimento
+//Cambio difficoltà (--> nuova partita)
 function changeDifficulty(lvl) {
     if (lvl == 0) {//***livello facile
         numBox = 49;
         boxPerRow = 7;
         numBombs = 10;
+        buone = numBox - numBombs;
         grid.className = "easyGrid";
         setup(grid, numBombs);
 
@@ -51,25 +66,27 @@ function changeDifficulty(lvl) {
         numBox = 121;
         boxPerRow = 11;
         numBombs = 25;
+        buone = numBox - numBombs;
         grid.className = "mediumGrid";
         setup(grid, numBombs);
     } else if (lvl == 2) {//***livello difficile
         numBox = 225;
         boxPerRow = 15;
         numBombs = 50;
+        buone = numBox - numBombs;
         grid.className = "hardGrid";
         setup(grid, numBombs);
     } else {//***livello crazy
         numBox = 625;
         boxPerRow = 25;
         numBombs = 100;
+        buone = numBox - numBombs;
         grid.className = "crazyGrid";
         setup(grid, numBombs);
     }
 }
 
-
-//Riempimento griglia
+//Riempimento griglia con box + eventListener per il click sui box
 function fillGrid() {
     for (let i = 0; i < boxPerRow; i++) {
         for (let j = 0; j < boxPerRow; j++) {
@@ -82,7 +99,8 @@ function fillGrid() {
                 if (this.classList.contains("bomb")) {
                     endGame();
                     console.log("FINE");
-                } else if (buone != 0) {
+                    console.log(box.innerHTML);
+                } else if (buone > 1) {
                     buone--;
                 } else {
                     endGame();
@@ -92,7 +110,7 @@ function fillGrid() {
     }
 }
 
-//generazione e inserimento bombe
+//Generazione e inserimento bombe
 function bombsGenerator(numBombs) {
     const arrayBox = document.getElementsByClassName('box');
     const array = [];
@@ -110,13 +128,7 @@ function bombsGenerator(numBombs) {
     }
 }
 
-
-//calcolo della posizione dei box in un sistema a matrice
-function positionCalc(row, col) {
-    return ((row * boxPerRow) + col)
-}
-
-
+//DA FARE REFACTORING
 //Riempimento di ogni box con il numero di bombe circostanti
 function fillBox() {
     console.log("DAJEEEE");
@@ -124,58 +136,50 @@ function fillBox() {
     for (let i = 0; i < arrayBox.length; i++) {
         let row = parseInt(i / boxPerRow);
         let col = i % boxPerRow;
-        console.log("row =", row, "col =", col);
-        let count = 0;
-        for (let x = 0; x < 3; x++) {
-            for (let y = 0; y < 3; y++) {
-                let a = (row - 1) + x;
-                let b = (col - 1) + y;
-                console.log("a =", a, "b =", b);
-                if (a >= 0 && a < boxPerRow && b >= 0 && b < boxPerRow) {
-                    console.log(arrayBox[positionCalc(a, b)].classList.contains("bomb"));
-                    if (arrayBox[positionCalc(a, b)].classList.contains("bomb")) {
-                        count++;
-                        console.log(count);
-                    }
-                }
-            }
+        // console.log("row =", row, "col =", col);
+        if (arrayBox[i].classList.contains("bomb")) {
+            arrayBox[i].innerHTML = '<i class="fas fa-bomb"></i>';
+        } else {
+            arrayBox[i].innerHTML = numBombsAround(row, col, arrayBox);
         }
-        arrayBox[i].innerHTML = count;
     }
 }
 
 //calcolo di quante bombe ci sono intorno al box[row, col]
-// function numBombsAround(row, col, boxPerRow, arrayBox) {
-//     let count = 0;
-//     for (let x = 0; x < 3; x++) {
-//         for (let y = 0; y < 3; y++) {
-//             let a = (row - 1) + x;
-//             let b = (col - 1) + y;
-//             console.log("a =", a, "b =", b);
-//             if (a >= 0 && a < boxPerRow && b >= 0 && b < boxPerRow) {
-//                 console.log("WE");
-//                 console.log(arrayBox[i].className);
-//                 console.log(arrayBox[i].classList.contains("bomb"));
-//                 if (arrayBox[positionCalc(a, b,)].classList.contains("bomb")) {
-//                     count++;
-//                     console.log(count);
-//                 }
-//             }
-//         }
-//     }
-//     return count;
-// }
+function numBombsAround(row, col, arrayBox) {
+    let count = 0;
+    for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+            let a = (row - 1) + x;
+            let b = (col - 1) + y;
+            // console.log("a =", a, "b =", b);
+            if (a >= 0 && a < boxPerRow && b >= 0 && b < boxPerRow) {
+                // console.log(arrayBox[positionCalc(a, b)].classList.contains("bomb"));
+                if (arrayBox[positionCalc(a, b)].classList.contains("bomb")) {
+                    count++;
+                    // console.log(count);
+                }
+            }
+        }
+    }
+    return count;
+}
 
 
 //concludere la partita
 function endGame() {
     result = document.getElementById("result");
-    if (buone == 0) {
+    if (buone == 1) {
         result.innerHTML = "Hai vinto! :D"
     } else {
         result.innerHTML = "Hai perso :("
     }
     result.classList.remove("hidden");
 }
+
+
+
+
+// --- SPECIFICHE ---
 
 //_____FINE FUNZIONI_____
